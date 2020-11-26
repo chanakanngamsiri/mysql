@@ -7,95 +7,95 @@
   - name: apacha
     shell:
       cmd:  yum install httpd httpd-tools -y
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
   
   - name: start httpd
     shell:
       cmd: systemctl start httpd
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: enable httpd
     shell:
       cmd: systemctl enable httpd
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: php1
     shell:
       cmd: yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: php2
     shell:
       cmd: yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm -y
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: php3
     shell:
       cmd: yum install yum-utils -y
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: php4
     shell:
       cmd: yum-config-manager --enable remi-php73 -y
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: php5
     shell:
       cmd: yum install php php-mcrypt php-cli php-gd php-curl php-mysql php-ldap php-zip php-fileinfo -y
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
 
 
   - name: install wget
     shell:
       cmd: yum install wget -y
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: wget
     shell:
        cmd: wget https://wordpress.org/latest.tar.gz
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
   
   - name: chown1
     shell:
       cmd: chown -R apache /root/latest.tar.gz
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
   
   - unarchive:
       src: /root/latest.tar.gz
       dest: /var/www/html
       remote_src: True
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: chown2
     shell:
      cmd: chown -R apache:apache /var/www/html/*
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: cp
     shell:
      cmd: mv /var/www/html/* /var/www/
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: mv 
     shell:
      cmd: mv /var/www/wordpress/* /var/www/html
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: cp
     shell:
      cmd: cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: cp1
     shell:
       cmd: yum install python3-pip -y
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: install mariadb-server
     shell:
        cmd: yum install mariadb-server -y
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
 
   - name: start mariadb-server and enable it on reboot
@@ -103,16 +103,16 @@
       name: mariadb 
       state: started 
       enabled: true
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   
   - name: python -m pip install PyMySQL
     command: yum install python-pip python-dev libmysqlclient-dev -y
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: pip 
     command:  pip install pymysql
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   
 
@@ -122,7 +122,7 @@
     mysql_db:
       name: wordpress 
       state: present
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
   
   - name: Create a new database with name 'mydb'
     mysql_user:
@@ -130,7 +130,7 @@
       password: 123456
       priv: '*.*:ALL' 
       state: present
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: edit db name1
     lineinfile: 
@@ -138,7 +138,7 @@
       regexp: 'database_name_her' 
       line: "define( 'DB_NAME', 'wordpress' );" 
       backup: yes
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: edit user
     lineinfile: 
@@ -146,7 +146,7 @@
       regexp: 'username_here' 
       line: "define( 'DB_USER', 'ploy' );" 
       backup: yes
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: edit passwd
     lineinfile: 
@@ -154,93 +154,93 @@
       regexp: 'password_here' 
       line: "define( 'DB_PASSWORD', '123456' );" 
       backup: yes
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
   - name: restart
     shell:
      cmd: systemctl restart httpd
-    when: inventory_hostname in groups['CentOS']
+    when: ansible_os_family == "RedHat"
 
 #-----------------------------------------------------------------
 #-----------------------------------------------------------------
 
-  #ubuntu
+  #Ubunto
   - name: update
     shell:
       cmd:  apt-get update -y
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
   
   - name: install apache2 
     shell:
       cmd:  apt-get install apache2 -y
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: ufs
     shell:
       cmd: ufw app list
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: ufs allow
     shell:
       cmd: ufw allow 'Apache Full'
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: start apache2
     shell:
       cmd: systemctl start apache2
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: enable apache2
     shell:
       cmd: systemctl enable --now apache2
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: install php
     shell:
       cmd: sudo apt install php php-cli php-fpm php-json php-common php-mysql php-zip php-gd php-mbstring php-curl php-xml php-pear php-bcmath -y
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
 
   - name: install wget
     shell:
        cmd: apt-get install wget -y
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: wget latest
     shell:
        cmd: wget -c https://wordpress.org/latest.tar.gz
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - unarchive:
       src: /root/latest.tar.gz
       dest: /var/www/html
       remote_src: True
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: chown2
     shell:
      cmd: chmod -777 /var/www/html/*
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: cp
     shell:
      cmd: mv /var/www/html/* /var/www/
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: mv 
     shell:
      cmd: mv /var/www/wordpress/* /var/www/html
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: cp
     shell:
      cmd: cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
   
   - name: install python3-pip
     shell:
       cmd: apt-get install python3-pip -y
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
 
   - name: Install MariaDB package
@@ -254,17 +254,17 @@
         - mydumper
         - mysqltuner
       state: latest
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: pip
     shell:
       cmd: pip install pymysql
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: pip3
     shell:
       cmd: pip3 install pymysql
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   
 
@@ -274,7 +274,7 @@
   - name: Pause for 3 minutes to build app cache
     pause:
       minutes: 1
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
   
 
   - name: Create mysql database
@@ -282,7 +282,7 @@
       login_unix_socket: /var/run/mysqld/mysqld.sock
       name: lol
       state: present 
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
   
   
   - name: Set mysql user privileges
@@ -294,7 +294,7 @@
       password: passwd
       priv: "*.*:ALL"
       state: present
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
       
 
       # ---------------------------
@@ -304,7 +304,7 @@
       regexp: 'database_name_her' 
       line: "define( 'DB_NAME', 'lol' );" 
       backup: yes
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: edit user
     lineinfile: 
@@ -312,7 +312,7 @@
       regexp: 'username_here' 
       line: "define( 'DB_USER', 'admin' );" 
       backup: yes
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: edit passwd
     lineinfile: 
@@ -320,9 +320,9 @@
       regexp: 'password_here' 
       line: "define( 'DB_PASSWORD', 'passwd' );" 
       backup: yes
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
 
   - name: restart
     shell:
      cmd: systemctl restart apache2
-    when: inventory_hostname in groups['Ubuntu']
+    when: ansible_os_family == "Debian"
