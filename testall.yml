@@ -1,0 +1,328 @@
+---
+#อันที่comment คือไม่ใช้
+- hosts: all
+
+  tasks:
+
+  - name: apacha
+    shell:
+      cmd:  yum install httpd httpd-tools -y
+    when: inventory_hostname in groups['CentOS']
+  
+  - name: start httpd
+    shell:
+      cmd: systemctl start httpd
+    when: inventory_hostname in groups['CentOS']
+
+  - name: enable httpd
+    shell:
+      cmd: systemctl enable httpd
+    when: inventory_hostname in groups['CentOS']
+
+  - name: php1
+    shell:
+      cmd: yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
+    when: inventory_hostname in groups['CentOS']
+
+  - name: php2
+    shell:
+      cmd: yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm -y
+    when: inventory_hostname in groups['CentOS']
+
+  - name: php3
+    shell:
+      cmd: yum install yum-utils -y
+    when: inventory_hostname in groups['CentOS']
+
+  - name: php4
+    shell:
+      cmd: yum-config-manager --enable remi-php73 -y
+    when: inventory_hostname in groups['CentOS']
+
+  - name: php5
+    shell:
+      cmd: yum install php php-mcrypt php-cli php-gd php-curl php-mysql php-ldap php-zip php-fileinfo -y
+    when: inventory_hostname in groups['CentOS']
+
+
+
+  - name: install wget
+    shell:
+      cmd: yum install wget -y
+    when: inventory_hostname in groups['CentOS']
+
+  - name: wget
+    shell:
+       cmd: wget https://wordpress.org/latest.tar.gz
+    when: inventory_hostname in groups['CentOS']
+  
+  - name: chown1
+    shell:
+      cmd: chown -R apache /root/latest.tar.gz
+    when: inventory_hostname in groups['CentOS']
+  
+  - unarchive:
+      src: /root/latest.tar.gz
+      dest: /var/www/html
+      remote_src: True
+    when: inventory_hostname in groups['CentOS']
+
+  - name: chown2
+    shell:
+     cmd: chown -R apache:apache /var/www/html/*
+    when: inventory_hostname in groups['CentOS']
+
+  - name: cp
+    shell:
+     cmd: mv /var/www/html/* /var/www/
+    when: inventory_hostname in groups['CentOS']
+
+  - name: mv 
+    shell:
+     cmd: mv /var/www/wordpress/* /var/www/html
+    when: inventory_hostname in groups['CentOS']
+
+  - name: cp
+    shell:
+     cmd: cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+    when: inventory_hostname in groups['CentOS']
+
+  - name: cp1
+    shell:
+      cmd: yum install python3-pip -y
+    when: inventory_hostname in groups['CentOS']
+
+  - name: install mariadb-server
+    shell:
+       cmd: yum install mariadb-server -y
+    when: inventory_hostname in groups['CentOS']
+
+
+  - name: start mariadb-server and enable it on reboot
+    service: 
+      name: mariadb 
+      state: started 
+      enabled: true
+    when: inventory_hostname in groups['CentOS']
+
+  
+  - name: python -m pip install PyMySQL
+    command: yum install python-pip python-dev libmysqlclient-dev -y
+    when: inventory_hostname in groups['CentOS']
+
+  - name: pip 
+    command:  pip install pymysql
+    when: inventory_hostname in groups['CentOS']
+
+  
+
+  
+  
+  - name: Create a new database with name 'mydb'
+    mysql_db:
+      name: wordpress 
+      state: present
+    when: inventory_hostname in groups['CentOS']
+  
+  - name: Create a new database with name 'mydb'
+    mysql_user:
+      name: ploy
+      password: 123456
+      priv: '*.*:ALL' 
+      state: present
+    when: inventory_hostname in groups['CentOS']
+
+  - name: edit db name1
+    lineinfile: 
+      path: /var/www/html/wp-config.php
+      regexp: 'database_name_her' 
+      line: "define( 'DB_NAME', 'wordpress' );" 
+      backup: yes
+    when: inventory_hostname in groups['CentOS']
+
+  - name: edit user
+    lineinfile: 
+      path: /var/www/html/wp-config.php
+      regexp: 'username_here' 
+      line: "define( 'DB_USER', 'ploy' );" 
+      backup: yes
+    when: inventory_hostname in groups['CentOS']
+
+  - name: edit passwd
+    lineinfile: 
+      path: /var/www/html/wp-config.php
+      regexp: 'password_here' 
+      line: "define( 'DB_PASSWORD', '123456' );" 
+      backup: yes
+    when: inventory_hostname in groups['CentOS']
+
+  - name: restart
+    shell:
+     cmd: systemctl restart httpd
+    when: inventory_hostname in groups['CentOS']
+
+#-----------------------------------------------------------------
+#-----------------------------------------------------------------
+
+  #ubuntu
+  - name: update
+    shell:
+      cmd:  apt-get update -y
+    when: inventory_hostname in groups['Ubuntu']
+  
+  - name: install apache2 
+    shell:
+      cmd:  apt-get install apache2 -y
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: ufs
+    shell:
+      cmd: ufw app list
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: ufs allow
+    shell:
+      cmd: ufw allow 'Apache Full'
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: start apache2
+    shell:
+      cmd: systemctl start apache2
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: enable apache2
+    shell:
+      cmd: systemctl enable --now apache2
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: install php
+    shell:
+      cmd: sudo apt install php php-cli php-fpm php-json php-common php-mysql php-zip php-gd php-mbstring php-curl php-xml php-pear php-bcmath -y
+    when: inventory_hostname in groups['Ubuntu']
+
+
+  - name: install wget
+    shell:
+       cmd: apt-get install wget -y
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: wget latest
+    shell:
+       cmd: wget -c https://wordpress.org/latest.tar.gz
+    when: inventory_hostname in groups['Ubuntu']
+
+  - unarchive:
+      src: /root/latest.tar.gz
+      dest: /var/www/html
+      remote_src: True
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: chown2
+    shell:
+     cmd: chmod -777 /var/www/html/*
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: cp
+    shell:
+     cmd: mv /var/www/html/* /var/www/
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: mv 
+    shell:
+     cmd: mv /var/www/wordpress/* /var/www/html
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: cp
+    shell:
+     cmd: cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+    when: inventory_hostname in groups['Ubuntu']
+  
+  - name: install python3-pip
+    shell:
+      cmd: apt-get install python3-pip -y
+    when: inventory_hostname in groups['Ubuntu']
+
+
+  - name: Install MariaDB package
+    apt:
+      name: "{{packages}}"
+    vars:
+      packages:
+        - mariadb-server
+        - default-libmysqlclient-dev
+        - python-pip
+        - mydumper
+        - mysqltuner
+      state: latest
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: pip
+    shell:
+      cmd: pip install pymysql
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: pip3
+    shell:
+      cmd: pip3 install pymysql
+    when: inventory_hostname in groups['Ubuntu']
+
+  
+
+  
+  
+  
+  - name: Pause for 3 minutes to build app cache
+    pause:
+      minutes: 1
+    when: inventory_hostname in groups['Ubuntu']
+  
+
+  - name: Create mysql database
+    mysql_db:
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+      name: lol
+      state: present 
+    when: inventory_hostname in groups['Ubuntu']
+  
+  
+  - name: Set mysql user privileges
+    mysql_user:
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+      login_user: root
+      login_password: ''
+      name: admin
+      password: passwd
+      priv: "*.*:ALL"
+      state: present
+    when: inventory_hostname in groups['Ubuntu']
+      
+
+      # ---------------------------
+  - name: edit db name1
+    lineinfile: 
+      path: /var/www/html/wp-config.php
+      regexp: 'database_name_her' 
+      line: "define( 'DB_NAME', 'lol' );" 
+      backup: yes
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: edit user
+    lineinfile: 
+      path: /var/www/html/wp-config.php
+      regexp: 'username_here' 
+      line: "define( 'DB_USER', 'admin' );" 
+      backup: yes
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: edit passwd
+    lineinfile: 
+      path: /var/www/html/wp-config.php
+      regexp: 'password_here' 
+      line: "define( 'DB_PASSWORD', 'passwd' );" 
+      backup: yes
+    when: inventory_hostname in groups['Ubuntu']
+
+  - name: restart
+    shell:
+     cmd: systemctl restart apache2
+    when: inventory_hostname in groups['Ubuntu']
